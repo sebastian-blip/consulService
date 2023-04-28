@@ -1,4 +1,5 @@
- const consul = require('consul');
+const consul = require('consul');
+const ip = process.argv[2];
 
 const server = require('http').createServer((req, res) => {
   res.end('Hello World!');
@@ -10,7 +11,7 @@ const service = {
   check: {
     id: 'my-app-check',
     name: 'My App Health Check',
-    http: 'http://127.0.0.1:3000/health',
+    http: 'http://'+ip+':3000/health',
     interval: '10s'
   }
 };
