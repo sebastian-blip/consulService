@@ -16,7 +16,7 @@ const service = {
 };
 
 // Registrar la aplicación con Consul
-const consulClient = consul();
+const consulClient = new consul();
 consulClient.agent.service.register(service, err => {
   if (err) throw err;
   console.log('Registro exitoso con Consul');
