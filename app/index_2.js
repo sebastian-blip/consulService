@@ -4,7 +4,7 @@ const express = require('express');
 const SERVICE_NAME='mymicroservice';
 const SERVICE_ID='m'+process.argv[2];
 const SCHEME='http';
-const HOST='192.168.50.11';
+const HOST='192.168.50.12';
 const PORT=process.argv[2]*1;
 const PID = process.pid;
 
