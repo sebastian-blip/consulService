@@ -1,32 +1,51 @@
-const consul = require('consul');
-const ip = process.argv[2];
+const Consul = require('consul');
+const express = require('express');
 
-const server = require('http').createServer((req, res) => {
-  res.end('Hello World!');
-});
+const SERVICE_NAME='mymicroservice';
+const SERVICE_ID='m'+process.argv[2];
+const SCHEME='http';
+const HOST= process.argv[2]*1;
+const PORT= 3000
+const PID = process.pid;
 
-const service = {
-  name: 'my-app',
-  port: 3000,
-  check: {
-    id: 'my-app-check',
-    name: 'My App Health Check',
-    http: 'http://'+ip+':3000/health',
-    interval: '10s'
-  }
-};
+/* Inicializacion del server */
+const app = express();
+const consul = new Consul();
 
-// Registrar la aplicación con Consul
-const consulClient = new consul();
-consulClient.agent.service.register(service, err => {
-  if (err) throw err;
-  console.log('Registro exitoso con Consul');
-});
+app.get('/health', function (req, res) {
+    console.log('Health check!');
+    res.end( "Ok." );
+    });
 
-// Cuando la aplicación se cierra, retirar la aplicación de Consul
-process.on('SIGINT', () => {
-  consulClient.agent.service.deregister(service, err => {
-    console.log('Desregistro exitoso con Consul');
-    process.exit(err ? 1 : 0);
+app.get('/', (req, res) => {
+  console.log('GET /', Date.now());
+  res.json({
+    data: Math.floor(Math.random() * 89999999 + 10000000),
+    data_pid: PID,
+    data_service: SERVICE_ID,
+    data_host: HOST
   });
 });
+
+app.listen(PORT, function () {
+    console.log('Servicio iniciado en:'+SCHEME+'://'+HOST+':'+PORT+'!');
+    });
+
+/* Registro del servicio */
+var check = {
+  id: SERVICE_ID,
+  name: SERVICE_NAME,
+  address: HOST,
+  port: PORT,
+  check: {
+	   http: SCHEME+'://'+HOST+':'+PORT+'/health',
+	   ttl: '5s',
+	   interval: '5s',
+     timeout: '5s',
+     deregistercriticalserviceafter: '1m'
+	   }
+  };
+
+consul.agent.service.register(check, function(err) {
+  	if (err) throw err;
+  	});
