@@ -38,7 +38,7 @@ var check = {
   address: HOST,
   port: PORT,
   check: {
-	   http: SCHEME+'://'+HOST+':'+PORT+'/health',
+	   http: 'http//127.0.0.1:3000/health',
 	   ttl: '5s',
 	   interval: '5s',
      timeout: '5s',
