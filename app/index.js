@@ -4,14 +4,15 @@ const server = require('http').createServer((req, res) => {
   res.end('Hello World!');
 });
 
-// Registrar la aplicación con Consul
-consulClient.agent.service.register({
-  name: 'my-node-app',
-  address: '127.0.0.1',
+const service = {
+  name: 'my-app',
   port: 3000,
   check: {
+    id: 'my-app-check',
+    name: 'My App Health Check',
     http: 'http://127.0.0.1:3000/health',
     interval: '10s'
+  }
 };
 
 // Registrar la aplicación con Consul
