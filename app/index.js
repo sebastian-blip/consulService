@@ -12,11 +12,19 @@ consulClient.agent.service.register({
   check: {
     http: 'http://127.0.0.1:3000/health',
     interval: '10s'
-}, (err) => {
-  if (err) throw err;
+};
 
-  // Iniciar el servidor
-  server.listen(3000, () => {
-    console.log('Servidor iniciado en el puerto 3000');
+// Registrar la aplicación con Consul
+const consulClient = consul();
+consulClient.agent.service.register(service, err => {
+  if (err) throw err;
+  console.log('Registro exitoso con Consul');
+});
+
+// Cuando la aplicación se cierra, retirar la aplicación de Consul
+process.on('SIGINT', () => {
+  consulClient.agent.service.deregister(service, err => {
+    console.log('Desregistro exitoso con Consul');
+    process.exit(err ? 1 : 0);
   });
 });
