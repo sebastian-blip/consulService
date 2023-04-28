@@ -1,4 +1,4 @@
- const consul = require('consul')();
+ const consul = require('consul');
 
 const server = require('http').createServer((req, res) => {
   res.end('Hello World!');
